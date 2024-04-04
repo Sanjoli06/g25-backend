@@ -1,0 +1,50 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id    Int     @id @default(autoincrement())
+  email String  @unique
+  name  String? 
+
+// ek profile Profile model ke sath reln h through foriegn key 
+  profile Profile?
+
+// one to many reln as ek user ki multiple posts ho skti h to array pass kra
+  posts Post[]
+}
+
+model Profile{
+  id    Int     @id @default(autoincrement())
+  username String 
+  userId Int  @unique
+
+// user h  User model ka reln
+  user User @relation(fields:[userId], references:[id])
+}
+
+model Post{
+  id    Int     @id @default(autoincrement())
+  title String 
+  userId Int @unique
+
+  user User @relation(fields:[userId], references:[id])
+  tags Tag[]
+}
+
+model Tag{
+  id    Int     @id @default(autoincrement())
+  name String
+  posts Post[]
+}
